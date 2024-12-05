@@ -90,7 +90,7 @@ fun main() {
 
 ## License
 
-[MIT](https://github.com/ajay577/YouTubeExtractor/blob/master/LICENSE)
+[Unlicense](https://github.com/AjayDhattarwal/YouTubeExtractor/blob/main/LICENSE)
 
 
 ## 🔗 Links
