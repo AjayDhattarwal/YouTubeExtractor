@@ -4,10 +4,7 @@ import com.ar.model.VideoData
 import com.ar.utils.DataExtractor
 import com.ar.utils.DataFetcher
 import com.ar.utils.Decryptor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class YouTubeExtractor {
 
@@ -22,7 +19,7 @@ class YouTubeExtractor {
             return@runBlocking null
         }
 
-        coroutineScope {
+        withContext(Dispatchers.IO) {
             val htmlContent =  dataFetcher.fetchHtmlPage(videoUrl)
 
             val playerJsDeferred = async(Dispatchers.IO) {
@@ -43,10 +40,10 @@ class YouTubeExtractor {
 
                 val decryptedVideoData = decryptor.decryptVideoData(videoData)
 
-                return@coroutineScope decryptedVideoData
+                return@withContext decryptedVideoData
 
             } else{
-                return@coroutineScope extractVideoData(videoUrl, retryCount + 1)
+                return@withContext extractVideoData(videoUrl, retryCount + 1)
             }
         }
     }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.ar"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -17,8 +17,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:3.0.1")
     implementation("io.ktor:ktor-client-json:3.0.1")
     implementation("io.ktor:ktor-client-serialization:3.0.1")
-    implementation("org.graalvm.js:js:22.1.0") // js executor
-
+    implementation ("org.mozilla:rhino:1.7.13") // js executor
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 

@@ -2,17 +2,33 @@ package com.ar.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.Value
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.NativeArray
+import org.mozilla.javascript.Scriptable
 
 class JsNsigExtractor(private val jsCode: String) {
 
-    private suspend fun captureReturnFromEval(formattedFunction: String): Value = withContext(Dispatchers.IO) {
-        val context = Context.create()
+    private suspend fun captureReturnFromEval(formattedFunction: String): Any? = withContext(Dispatchers.IO) {
+        val context = Context.enter()
 
-        val result = context.eval("js", formattedFunction)
+        return@withContext try {
+            val scope: Scriptable = context.initStandardObjects()
 
-        return@withContext result
+            val result = context.evaluateString(scope, formattedFunction, "<cmd>", 1, null)
+            if (result is NativeArray) {
+                val arrayList = ArrayList<Any>()
+                for (i in 0 until result.length) {
+                    arrayList.add(result.get(i))
+                }
+                return@withContext arrayList
+            }
+            result
+        } catch (e: Exception) {
+
+            null
+        } finally {
+            Context.exit()
+        }
     }
 
     fun extractObjectName(code: String): String? {
@@ -87,7 +103,7 @@ class JsNsigExtractor(private val jsCode: String) {
         val args = functionCode?.first
         val code = functionCode?.second
         val formattedFunction = "(function(${args}) { ${code} }(\"$nSignature\"))"
-        val list = captureReturnFromEval(formattedFunction).`as`(Array::class.java)
+        val list = captureReturnFromEval(formattedFunction) as ArrayList<String>
 
         return list.joinToString("")
     }

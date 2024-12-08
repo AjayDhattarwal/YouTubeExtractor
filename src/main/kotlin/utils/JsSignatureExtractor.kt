@@ -4,17 +4,27 @@ import com.ar.module.JsUtils.MATCHING_PARENS
 import com.ar.module.JsUtils.QUOTES
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.graalvm.polyglot.Context
-import org.graalvm.polyglot.Value
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.Scriptable
 
 class JsSignatureExtractor(private val jsCode: String) {
 
-    private suspend fun captureReturnFromEval(formattedFunction: String): Value = withContext(Dispatchers.IO) {
-        val context = Context.create()
+    private suspend fun captureReturnFromEval(formattedFunction: String): Any? = withContext(Dispatchers.IO) {
+        // Create a new context to run JavaScript
+        val context = Context.enter()
 
-        val result = context.eval("js", formattedFunction)
+        return@withContext try {
+            val scope: Scriptable = context.initStandardObjects()
 
-        return@withContext result
+            val result = context.evaluateString(scope, formattedFunction, "<cmd>", 1, null)
+
+            result
+        } catch (e: Exception) {
+
+            null
+        } finally {
+            Context.exit()
+        }
     }
 
     suspend fun signatureFunctionResponse(functionCode: Pair<String, String>, encryptedSig: String): String{
@@ -34,7 +44,7 @@ class JsSignatureExtractor(private val jsCode: String) {
 
         val formattedFunction = "(function(${functionCode.first}) { ${script} }(\"$encryptedSig\"))"
 
-        return captureReturnFromEval(formattedFunction).asString()
+        return captureReturnFromEval(formattedFunction) as String
     }
 
 

@@ -25,7 +25,7 @@ class DataExtractor {
             return@withContext null
         }
 
-        val pattern = """<script nonce="[^"]*">var\sytInitialPlayerResponse\s*=\s*(\{.*?})(?:;|</script>)"""
+        val pattern = """<script nonce="[^"]*">var\sytInitialPlayerResponse\s*=\s*(\{.*?})(?:;|<\/script>)"""
         val htmlMatcher = extractValueFromHtml(html,pattern)
 
         val jsonString = htmlMatcher?.groupValues?.getOrNull(1)
