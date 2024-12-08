@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.ar"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -22,6 +22,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 
-tasks.test {
-    useJUnitPlatform()
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["kotlin"])
+            groupId = "com.ar"
+            artifactId = "YouTubeExtractor"
+            version = "1.0.0"
+        }
+    }
 }
