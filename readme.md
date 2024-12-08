@@ -1,7 +1,11 @@
 
-# YouTubeExtractor
+# YouTubeExtractor Library
 
-A lightweight Kotlin-based YouTube video data extraction library. This tool fetches video metadata and URLs without the need for external source code, relying  on `Ktor` and `graalvm.js`.
+[![](https://jitpack.io/v/AjayDhattarwal/YouTubeExtractor.svg)](https://jitpack.io/#AjayDhattarwal/YouTubeExtractor)
+
+YouTubeExtractor is a lightweight Kotlin library for extracting video and audio URLs from YouTube. It's simple to integrate and use in your projects.
+
+
 
 ## Features
 
@@ -19,6 +23,29 @@ A lightweight Kotlin-based YouTube video data extraction library. This tool fetc
 - Ktor with `CIO` engine
 
 ## Installation
+
+## Installation
+
+### Step 1: Add JitPack Repository
+Add JitPack to your project's `repositories` section:
+
+#### Groovy DSL
+```groovy
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    implementation("com.github.AjayDhattarwal:YouTubeExtractor:1.0.0")
+}
+
+```
+
+## Option 2: Manual JAR Inclusion
+
 
 #### 1. Clone the repository:
    ```bash
