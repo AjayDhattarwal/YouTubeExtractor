@@ -13,7 +13,7 @@ A Kotlin Multiplatform (KMP) library for extracting YouTube video information. S
 
 - Kotlin Multiplatform (KMP) support.
 - Fetch YouTube video metadata (title, description, Streaming Url , etc.).
-- Ready for Android and Desktop platforms.
+- Ready for Android, IOS and Desktop platforms.
 - Built-in retry mechanism for resilient data fetching.
 
 ## Requirements
@@ -52,14 +52,14 @@ Add the library dependency to your respective modules.
 #### For Android:
 ```kotlin
 dependencies {
-    implementation("io.github.ajaydhattarwal:youtube-extractor-android:1.0.0")
+    implementation("io.github.ajaydhattarwal:youtube-extractor-android:1.0.1")
 }
 ```
 
 #### For Desktop:
 ```kotlin
 dependencies {
-    implementation("io.github.ajaydhattarwal:youtube-extractor-desktop:1.0.0")
+    implementation("io.github.ajaydhattarwal:youtube-extractor-desktop:1.0.1")
 }
 ```
 
@@ -69,7 +69,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.github.ajaydhattarwal:youtube-extractor:1.0.0")
+                implementation("io.github.ajaydhattarwal:youtube-extractor:1.0.1")
             }
         }
     }
@@ -102,7 +102,6 @@ fun main() {
 
 ```
 ## Planned Features
-- Full iOS support.
 - Additional configuration options.
 - Improved error handling and logging.
 
