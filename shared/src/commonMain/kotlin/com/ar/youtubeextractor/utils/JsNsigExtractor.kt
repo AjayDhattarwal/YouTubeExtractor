@@ -10,13 +10,10 @@ class JsNsigExtractor(private val jsCode: String) {
 
     private suspend fun captureReturn(formattedFunction: String): ArrayList<String> = withContext(Dispatchers.IO) {
         try{
-            val result = captureReturnFromEval(formattedFunction)
+            val result = captureReturnFromEval(formattedFunction) ?: emptyArray<String>()
             if (result is Array<*>) {
-                // If the array is of a specific type, cast it
-                val objectArray = result as Array<Any>
 
-                // Convert to List
-                val arrayList = objectArray.toList()
+                val arrayList = result.toList()
                 return@withContext arrayList as ArrayList<String>
             } else {
                 return@withContext result as ArrayList<String>
@@ -26,7 +23,7 @@ class JsNsigExtractor(private val jsCode: String) {
         }
     }
 
-    fun extractObjectName(code: String): String? {
+    private fun extractObjectName(code: String): String? {
         val objectPattern = Regex("""([A-Za-z][A-Za-z]+)\.\w+\(""")
         return objectPattern.find(code)?.groupValues?.get(1)
     }

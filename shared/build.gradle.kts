@@ -13,10 +13,8 @@ plugins {
 
 
 kotlin {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
     androidTarget {
-        publishLibraryVariants("release")
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
@@ -24,19 +22,22 @@ kotlin {
                 }
             }
         }
-        publishLibraryVariants("release", "debug")
+        publishLibraryVariants("release")
     }
 
-//    listOf(
-//        iosX64(),
-//        iosArm64(),
-//        iosSimulatorArm64()
-//    ).forEach {
-//        it.binaries.framework {
-//            baseName = "shared"
-//            isStatic = true
-//        }
-//    }
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+
+    }
+
+
     jvm("desktop") {
         compilations.all {
             compileTaskProvider.configure {
@@ -60,14 +61,15 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
-//            implementation("io.ktor:ktor-client-cio:3.0.2")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-//        nativeMain.dependencies {
-//            implementation("io.ktor:ktor-client-cio:3.0.2")
-//        }
+
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
         androidMain.dependencies {
             implementation("com.squareup.duktape:duktape-android:1.4.0")
             implementation(libs.ktor.client.okhttp)
@@ -109,7 +111,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.ajaydhattarwal",
         artifactId = "youtube-extractor",
-        version = "1.0.0"
+        version = "1.0.1"
     )
 
     // Define POM metadata
