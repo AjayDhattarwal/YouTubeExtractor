@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -7,14 +9,16 @@ plugins {
     alias(libs.plugins.androidLibrary)
     id("maven-publish")
     alias(libs.plugins.kotlin.serialization)
-    id("com.vanniktech.maven.publish") version "0.28.0"
+    id("com.vanniktech.maven.publish") version "0.30.0"
 }
 
 
 
 kotlin {
-    applyDefaultHierarchyTemplate()
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    targetHierarchy.default()
     androidTarget {
+        publishLibraryVariants("release")
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
@@ -22,7 +26,7 @@ kotlin {
                 }
             }
         }
-        publishLibraryVariants("release")
+        publishLibraryVariants("release", "debug")
     }
 
     listOf(
@@ -34,7 +38,6 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
-
     }
 
 
@@ -66,7 +69,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
 
-        nativeMain.dependencies {
+        iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
 
@@ -118,7 +121,7 @@ mavenPublishing {
     pom {
         name.set("KMP Library for Youtube video Data Extractor With Streaming Url")
         description.set("This library can be used by Android, iOS, and JVM targets for the shared functionality Youtube video Data Extractor With Streaming Url")
-        inceptionYear.set("2024")
+        inceptionYear.set("2025")
         url.set("https://github.com/AjayDhattarwal/YouTubeExtractor")
 
         licenses {

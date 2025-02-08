@@ -16,8 +16,3 @@ actual suspend fun captureReturnFromEval(formattedFunction: String): Any? {
         else -> result.toObject()
     }
 }
-
-//private fun JSValue.toArray(): List<Any?> {
-//    val length = this.context?.evaluateScript("this.length")?.toInt32() ?: 0
-//    return (0 until length).map { this.context?.evaluateScript("this[$it]") }
-//}

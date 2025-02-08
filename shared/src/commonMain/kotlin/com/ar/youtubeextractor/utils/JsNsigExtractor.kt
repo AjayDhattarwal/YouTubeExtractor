@@ -8,18 +8,19 @@ import kotlinx.coroutines.withContext
 class JsNsigExtractor(private val jsCode: String) {
 
 
-    private suspend fun captureReturn(formattedFunction: String): ArrayList<String> = withContext(Dispatchers.IO) {
+    private suspend fun captureReturn(formattedFunction: String): List<String> = withContext(Dispatchers.IO) {
         try{
-            val result = captureReturnFromEval(formattedFunction) ?: emptyArray<String>()
+            val result = captureReturnFromEval(formattedFunction) ?: return@withContext emptyList()
             if (result is Array<*>) {
 
-                val arrayList = result.toList()
-                return@withContext arrayList as ArrayList<String>
+                val arrayList = result.toList().map { it.toString() }
+                return@withContext arrayList
             } else {
-                return@withContext result as ArrayList<String>
+                return@withContext result.toString().toList().map { it.toString() }
             }
         }catch (e: Exception){
-            throw Exception("capture return error : ${e.message}")
+            e.printStackTrace()
+            return@withContext emptyList()
         }
     }
 
