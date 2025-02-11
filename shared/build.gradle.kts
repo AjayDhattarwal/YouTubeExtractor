@@ -15,14 +15,13 @@ plugins {
 
 
 kotlin {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
     androidTarget {
         publishLibraryVariants("release")
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
+                    jvmTarget.set(JvmTarget.JVM_1_8)
                 }
             }
         }
@@ -45,7 +44,7 @@ kotlin {
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
+                    jvmTarget.set(JvmTarget.JVM_1_8)
                 }
             }
         }
@@ -55,18 +54,26 @@ kotlin {
     sourceSets {
         val desktopMain by getting{
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
-                implementation("io.ktor:ktor-client-cio:3.0.2")
-                implementation ("org.mozilla:rhino:1.7.13")
+                implementation(libs.kotlin.stdlib)
+                implementation (libs.rhino)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.ktor.client.content.encoding)
             }
         }
         commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.content.encoding)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
+            implementation("io.ktor:ktor-client-logging:3.0.3")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(kotlin("test-annotations-common"))
+            implementation(libs.assertk)
+            implementation(libs.ktor.client.mock)
         }
 
         iosMain.dependencies {
@@ -74,10 +81,10 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("com.squareup.duktape:duktape-android:1.4.0")
+            implementation(libs.duktape.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
-            implementation("androidx.javascriptengine:javascriptengine:1.0.0-beta01")
+//            implementation("androidx.javascriptengine:javascriptengine:1.0.0-beta01")
         }
     }
 }
@@ -87,17 +94,17 @@ android {
     namespace = "com.ar.youtubeextractor"
     compileSdk = 35
     defaultConfig {
-        minSdk = 26
+        minSdk = 21
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     beforeEvaluate {
         libraryVariants.all {
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17 // Or VERSION_17 in your case
-                targetCompatibility = JavaVersion.VERSION_17
+                sourceCompatibility = JavaVersion.VERSION_1_8 // Or VERSION_17 in your case
+                targetCompatibility = JavaVersion.VERSION_1_8
             }
         }
     }
@@ -114,13 +121,13 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.ajaydhattarwal",
         artifactId = "youtube-extractor",
-        version = "1.0.1"
+        version = "1.0.2"
     )
 
     // Define POM metadata
     pom {
         name.set("KMP Library for Youtube video Data Extractor With Streaming Url")
-        description.set("This library can be used by Android, iOS, and JVM targets for the shared functionality Youtube video Data Extractor With Streaming Url")
+        description.set("This library can be used by Android, iOS, and Desktop(JVM) targets for the shared functionality Youtube video Data Extractor With Streaming Url")
         inceptionYear.set("2025")
         url.set("https://github.com/AjayDhattarwal/YouTubeExtractor")
 

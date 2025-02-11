@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Format(
     val itag: Int? = null,
-//    val url: String? = null,   // not in use
+    val url: String? = null,   // not in use
     val mimeType: String? = null,
     val bitrate: Int? = null,
     val width: Int?= null,
@@ -22,12 +22,11 @@ data class Format(
     val projectionType: String? = null,
     val averageBitrate: Int? = null,
     val audioQuality: String? = null,
-    val approxDurationMs: String,
+    val approxDurationMs: String? = null,
     val audioSampleRate: String? = null,
     val audioChannels: Int? = null,
     val signatureCipher: String? = null,
     val loudnessDb: Float? = null,
-    val streamingUrl: String? = null,
 ){
     val isAudioOnly: Boolean =
         height == null
@@ -39,6 +38,5 @@ data class Format(
     val isVideoOnly: Boolean =
         width != null && height != null && initRange != null && indexRange != null
 
-    val isDecoded: Boolean = streamingUrl != null
 
 }

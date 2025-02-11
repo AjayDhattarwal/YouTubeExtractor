@@ -10,8 +10,6 @@ import kotlinx.coroutines.withContext
 
 class JsSignatureExtractor(private val jsCode: String) {
 
-
-
     private suspend fun captureReturn(formattedFunction: String): String? = withContext(Dispatchers.IO) {
 
         return@withContext try {
@@ -48,17 +46,8 @@ class JsSignatureExtractor(private val jsCode: String) {
 
     fun extractJSFunctionCode(funcName: String):Pair<String,String> {
         val funcNameEscaped = Regex.escape(funcName)
-        val pattern = """
-        (?x)
-        (?:
-            function\s+$funcNameEscaped|
-            [\{;,]\s*$funcNameEscaped\s*=\s*function|
-            (?:var|const|let)\s+$funcNameEscaped\s*=\s*function
-        )\s*
-        \((?<args>[^)]*)\)\s*
-        (?<code>\{.+\})
-    """.trimIndent()
-        val regex = Regex(pattern)
+        val pattern = "(?x)(?:function\\s+$funcNameEscaped|[\\{;,]\\s*$funcNameEscaped\\s*=\\s*function|(?:var|const|let)\\s+$funcNameEscaped\\s*=\\s*function)\\s*\\((?<args>[^)]*)\\)\\s*(?<code>\\{.+\\})"
+        val regex = Regex(pattern = pattern)
         val matchResult = regex.find(jsCode)
             ?: throw Exception("Could not find JS function \"$funcName\"")
 

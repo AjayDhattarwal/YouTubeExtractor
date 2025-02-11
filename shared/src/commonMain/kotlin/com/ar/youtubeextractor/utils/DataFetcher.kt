@@ -1,8 +1,13 @@
 package com.ar.youtubeextractor.utils
 
+import com.ar.youtubeextractor.core.DataError
 import com.ar.youtubeextractor.core.FunctionManager
+import com.ar.youtubeextractor.core.Result
 import com.ar.youtubeextractor.di.createHttpClient
-import io.ktor.client.HttpClient
+import com.ar.youtubeextractor.function.getRequestBody
+import com.ar.youtubeextractor.function.safeCall
+import com.ar.youtubeextractor.model.VideoData
+import com.ar.youtubeextractor.model.request.toJson
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -12,41 +17,48 @@ import kotlinx.coroutines.withContext
 
 class DataFetcher {
 
+    private val httpClient = createHttpClient()
 
-    suspend fun fetchHtmlPage(url: String , userAgent: String): String {
+    suspend fun fetchHtmlPage(url: String , userAgent: String, tryCount: Int = 0): String? {
         return withContext(Dispatchers.IO) {
-            val client = createHttpClient()
-            val document = client.get(url){
-                headers {
-                    append("Accept-Language" , "en-us,en;q=0.5")
-                    append("X-YouTube-Client-Name", "IOS")
-                    append("X-YouTube-Client-Version", "16.48.4")
-                    append("origin", "https://www.youtube.com")
-                    append("referer", url)
-                    append("User-Agent",userAgent)
+            try {
+                val document = httpClient.get(url){
+                    headers {
+                        append("Accept-Language" , "en-US,en;q=0.9")
+                        append(HttpHeaders.Origin, "https://www.youtube.com")
+                        append(HttpHeaders.Referrer, url)
+                        append("Sec-Fetch-Mode", "navigate")
+                        append("Accept-Encoding", "gzip, deflate")
+                    }
+                }
+                document.readRawBytes().decodeToString()
+            }catch (e: Exception){
+                if(tryCount > 2){
+                    println(e.message)
+                    null
+                }else{
+                    fetchHtmlPage(url, userAgent, tryCount + 1)
                 }
             }
-            document.bodyAsText()
         }
 
     }
 
-    suspend fun fetchJavaScript(playerUrl: String, refererUrl: String, userAgent: String ): String? {
-        val client = createHttpClient()
+    suspend fun fetchJavaScript(playerUrl: String, refererUrl: String, userAgent: String): String? {
+
         try {
-            val response: HttpResponse = client.get(playerUrl){
+            val response: HttpResponse = httpClient.get(playerUrl){
                 headers {
-                    append("Accept-Language" , "en-us,en;q=0.5")
-                    append("X-YouTube-Client-Name", "IOS")
-                    append("X-YouTube-Client-Version", "16.48.4")
-                    append("origin", "https://www.youtube.com")
-                    append("referer", refererUrl)
-                    append("User-Agent",userAgent)
+                    append("Accept-Language" , "en-US,en;q=0.9")
+                    append(HttpHeaders.Origin, "https://www.youtube.com")
+                    append(HttpHeaders.Referrer, refererUrl)
+                    append("Sec-Fetch-Mode", "navigate")
+                    append("Accept-Encoding", "gzip, deflate")
                 }
             }
 
             if (response.status == HttpStatusCode.OK) {
-                val jsCode = response.bodyAsText()
+                val jsCode = response.readRawBytes().decodeToString()
                 FunctionManager.updateJsCode(jsCode)
                 if(fetchRequirements(jsCode)) {
                     return jsCode
@@ -61,8 +73,6 @@ class DataFetcher {
         } catch (e: Exception) {
             println("Error fetching JavaScript: ${e.message}")
             return null
-        } finally {
-//            client.close()
         }
     }
 
@@ -105,4 +115,31 @@ class DataFetcher {
         }
     }
 
+    suspend fun getDataByAPI(googleId: String, videoID:String, platform: String): Result<VideoData,DataError> {
+
+        val requestBody = getRequestBody(platform, videoID)
+
+        return safeCall{
+            val response = httpClient.post("https://www.youtube.com/youtubei/v1/player?prettyPrint=false") {
+                headers {
+                    append("Accept-Language", "en-US,en;q=0.5")
+                    append("Sec-Fetch-Mode", "navigate")
+                    append("Accept-Encoding", "gzip, deflate")
+                    append("Origin", "https://www.youtube.com")
+                    requestBody.context?.client?.userAgent?.let{
+                        append(HttpHeaders.UserAgent,  it)
+                    }
+                    append("Accept", "text/html,application/xhtml+xml,application/xml")
+                    append("Content-Type", "application/json")
+                    append("X-Goog-Visitor-Id", googleId)
+                }
+                setBody(toJson(requestBody))
+            }
+
+
+            response
+        }
+    }
+
 }
+

@@ -1,28 +1,44 @@
 [versions]
 agp = "8.7.3"
+duktapeAndroid = "1.4.0"
 kotlin = "2.1.0"
-androidx-activityCompose = "1.9.3"
-coroutines = "1.9.0"
-ktor = "3.0.2"
-koin = "3.6.0-Beta4"
+coroutines = "1.10.1"
+kotlinxSerializationJson = "1.7.3"
+ktor = "3.0.3"
+junit = "4.13.2"
+assertk = "0.28.1"
+coreKtx = "1.6.1"
+composeTest = "1.7.7"
+rhino = "1.7.13"
+
 
 [libraries]
+duktape-android = { module = "com.squareup.duktape:duktape-android", version.ref = "duktapeAndroid" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-koin-core = { module = "io. insert-koin:koin-core", version.ref = "koin" }
-koin-androidx-compose = { module = "jo. insert-koin:koin-androidx-compose", version.ref = "koin"}
+ktor-client-apache5 = { module = "io.ktor:ktor-client-apache5", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+ktor-client-content-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
+
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
+compose-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeTest" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeTest" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
+rhino = { module = "org.mozilla:rhino", version.ref = "rhino" }
 
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}

@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VideoData(
-    val streamingData: StreamingData,
-    val videoDetails: VideoDetails
+    val responseContext: ResponseContext = ResponseContext(),
+    val streamingData: StreamingData = StreamingData(),
+    val videoDetails: VideoDetails = VideoDetails(),
 )
+

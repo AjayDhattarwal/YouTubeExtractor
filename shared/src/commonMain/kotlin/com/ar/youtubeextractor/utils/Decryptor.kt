@@ -23,9 +23,9 @@ class Decryptor(private val jsCode: String) {
 
         val staticFormatsDeferred =
             videoData.streamingData.formats?.map { format ->
-                async(Dispatchers.IO) {
+                async{
                     format.copy(
-                        streamingUrl = format.signatureCipher?.let { getStreamingUrl(signatureCipher = it) }
+                        url = format.signatureCipher?.let { getStreamingUrl(signatureCipher = it) }
                     )
                 }
             }
@@ -33,20 +33,22 @@ class Decryptor(private val jsCode: String) {
 
         val adaptiveFormatsDeferred =
             videoData.streamingData.adaptiveFormats?.map { format ->
-                async(Dispatchers.IO) {
+                async {
                     format.copy(
-                        streamingUrl = format.signatureCipher?.let { getStreamingUrl(signatureCipher = it) }
+                        url = format.signatureCipher?.let { getStreamingUrl(signatureCipher = it) }
                     )
                 }
             }
 
         val staticFormats = staticFormatsDeferred?.awaitAll()
         val adaptiveFormats = adaptiveFormatsDeferred?.awaitAll()
+        val hlsFormats = videoData.streamingData.hlsFormats
 
         videoData.copy(
             streamingData = videoData.streamingData.copy(
                 formats = staticFormats,
-                adaptiveFormats = adaptiveFormats
+                adaptiveFormats = adaptiveFormats,
+                hlsFormats = hlsFormats
             )
         )
     }

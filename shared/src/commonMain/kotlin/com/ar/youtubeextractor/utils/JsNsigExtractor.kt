@@ -12,11 +12,11 @@ class JsNsigExtractor(private val jsCode: String) {
         try{
             val result = captureReturnFromEval(formattedFunction) ?: return@withContext emptyList()
             if (result is Array<*>) {
-
                 val arrayList = result.toList().map { it.toString() }
                 return@withContext arrayList
             } else {
-                return@withContext result.toString().toList().map { it.toString() }
+                val output = (result as? List<*>)?.map { it.toString() }
+                return@withContext output ?: emptyList()
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -41,7 +41,6 @@ class JsNsigExtractor(private val jsCode: String) {
     fun extractNFunctionName():String? {
         val regex = Regex("""([a-zA-Z0-9_${'$'}\{}`]+)=([a-zA-Z0-9_${'$'}\{}`]+)\[\d+\]\([a-zA-Z0-9_${'$'}\{}`]+\),([a-zA-Z0-9_${'$'}\{}`]+)\.set\(([^,]+),([a-zA-Z0-9_${'$'}\{}`]+)\)""")
 
-        // Compile the regex pattern
         val matcher = regex.find(jsCode)
 
         val variableName = matcher?.groups?.get(2)?.value
@@ -54,27 +53,13 @@ class JsNsigExtractor(private val jsCode: String) {
 
     }
 
-    fun extractNFunctionCode(funcName: String): Pair<String, String>? {
+    fun extractNFunctionCode(funcName: String): Pair<String, String> {
         val funcNameEscaped = Regex.escape(funcName)
-        val pattern = """
-        (?x)                       
-        (?:
-            function\s+${funcNameEscaped}\s*|         
-            [{;,]\s*${funcNameEscaped}\s*=\s*function\s*| 
-            (?:var|const|let)\s+${funcNameEscaped}\s*=\s*function\s* 
-        )
-        \(
-            ([^)]*)
-        \)
-        \{
-            (.*?)
-            .join\(""\)
-        \}
-    """.trimIndent().replace(".", "[\\s\\S]")
+        val pattern = """(?x)(?:function\s+${funcNameEscaped}\s*|[{;,]\s*${funcNameEscaped}\s*=\s*function\s*|(?:var|const|let)\s+${funcNameEscaped}\s*=\s*function\s*)\(([^)]*)\)\{(.*?).join\(""\)\}""".trimIndent().replace(".", "[\\s\\S]")
 
         val regex = Regex(pattern)
         val matchResult = regex.find(jsCode)
-            ?: throw Exception("Could not find JS N signature function \"$funcName\"")
+            ?: throw Exception("Could not find JS N signature function \"$funcNameEscaped\"")
 
         val args = matchResult.groups[1]?.value ?: ""
         val code = matchResult.groups[2]?.value ?: ""

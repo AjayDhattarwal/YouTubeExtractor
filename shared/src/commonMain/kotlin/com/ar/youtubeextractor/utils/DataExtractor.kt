@@ -21,26 +21,34 @@ class DataExtractor {
         }
     }
 
-    suspend fun extractVideoData(html: String, retryCount: Int = 0,videoUrl: String, userAgent: String): VideoData? = withContext(Dispatchers.IO) {
-        if (retryCount >= 3) {
-            return@withContext null
-        }
-
-        val pattern = """<script nonce="[^"]*">var\sytInitialPlayerResponse\s*=\s*(\{.*?\})(?:;|<\/script>)"""
-        val htmlMatcher = extractValueFromHtml(html,pattern)
-
-        val jsonString = htmlMatcher?.groupValues?.getOrNull(1)
-
-
-        if(jsonString!= null){
-            val json = Json {
-                ignoreUnknownKeys = true
+    suspend fun extractVideoData(
+        html: String,
+        retryCount: Int = 0,
+        videoUrl: String,
+        userAgent: String
+    ): VideoData? = withContext(Dispatchers.IO) {
+        try {
+            if (retryCount >= 3) {
+                return@withContext null
             }
-            val videoData = json.decodeFromString<VideoData>(jsonString)
-            return@withContext videoData
-        }else{
-            val refreshedHtml = dataFetcher.fetchHtmlPage(videoUrl, userAgent)
-            return@withContext extractVideoData(refreshedHtml, retryCount + 1, videoUrl, userAgent)
+            val pattern = """<script nonce="[^"]*">var\sytInitialPlayerResponse\s*=\s*(\{.*?\})(?:;|<\/script>)"""
+
+            val htmlMatcher = extractValueFromHtml(html, pattern)
+
+            val jsonString = htmlMatcher?.groupValues?.getOrNull(1)
+
+            if (jsonString != null) {
+                val json = Json {
+                    ignoreUnknownKeys = true;
+                    isLenient = true
+                }
+                return@withContext json.decodeFromString<VideoData>(jsonString)
+            } else {
+                val refreshedHtml = dataFetcher.fetchHtmlPage(videoUrl, userAgent) ?: return@withContext null
+                return@withContext extractVideoData(refreshedHtml, retryCount + 1, videoUrl, userAgent)
+            }
+        } catch (e: Exception) {
+            return@withContext null
         }
 
     }
@@ -58,7 +66,7 @@ class DataExtractor {
             val playerUrl =  "https://www.youtube.com" + htmlMatcher.value
             playerUrl
         }else{
-            val refreshedHtml = dataFetcher.fetchHtmlPage(videoUrl, userAgent)
+            val refreshedHtml = dataFetcher.fetchHtmlPage(videoUrl, userAgent)?: return@withContext  null
             extractPlayerUrl(refreshedHtml , retryCount + 1, videoUrl, userAgent)
         }
     }

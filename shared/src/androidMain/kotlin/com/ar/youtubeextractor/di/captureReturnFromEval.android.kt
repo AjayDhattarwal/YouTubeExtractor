@@ -1,10 +1,8 @@
 package com.ar.youtubeextractor.di
 
-import android.util.Log
 import com.squareup.duktape.Duktape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
 
 actual suspend fun captureReturnFromEval(formattedFunction: String): Any? = withContext(Dispatchers.IO) {
     val duktape = Duktape.create()
