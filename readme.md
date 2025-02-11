@@ -52,14 +52,14 @@ Add the library dependency to your respective modules.
 #### For Android:
 ```kotlin
 dependencies {
-    implementation("io.github.ajaydhattarwal:youtube-extractor-android:1.0.1")
+    implementation("io.github.ajaydhattarwal:youtube-extractor-android:1.0.2")
 }
 ```
 
 #### For Desktop:
 ```kotlin
 dependencies {
-    implementation("io.github.ajaydhattarwal:youtube-extractor-desktop:1.0.1")
+    implementation("io.github.ajaydhattarwal:youtube-extractor-desktop:1.0.2")
 }
 ```
 
@@ -69,7 +69,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.github.ajaydhattarwal:youtube-extractor:1.0.1")
+                implementation("io.github.ajaydhattarwal:youtube-extractor:1.0.2")
             }
         }
     }
@@ -91,12 +91,16 @@ fun main() {
 
     val url = "https://www.youtube.com/watch?v=GT0rV3pV2fA"
 
-    val videoData = youtubeExtractor.extractVideoData(url) 
+    youtubeExtractor.extractVideoData(url).onSuccess{
+        println("video Title = >  ${it.videoDetails?.title}")
+        println("video description = >  ${it.videoDetails?.shortDescription}")
 
-    println("video Title = >  ${videoData?.videoDetails?.title}")
-    println("video description = >  ${videoData?.videoDetails?.shortDescription}")
-
-    println("static Format url = >  ${videoData?.streamingData?.formats?.first()}")
+        println("static Format url = >  ${it.streamingData?.formats?.first()}")
+        println("hls url :: ${it.streamingData.hlsManifestUrl}")
+    }.onError{  //error ->
+        //error message 
+    }
+    
 
 }
 
